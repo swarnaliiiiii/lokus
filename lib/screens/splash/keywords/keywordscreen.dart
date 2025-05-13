@@ -9,4 +9,46 @@ class Keywordscreen extends StatefulWidget{
   State<Keywordscreen> createState() => _KeywordscreenState();
 }
 
-class 
+class _KeywordscreenState extends State<Keywordscreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.keywordColor,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 200,
+              color: AppColors.dashColor,
+
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 200,
+              color: AppColors.page2Color,
+              
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 200,
+              color: AppColors.page3Color,
+              
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 200,
+              color: AppColors.splashColor,
+            ),
+          ),
+        ],
+      )
+    );
+  }
+}

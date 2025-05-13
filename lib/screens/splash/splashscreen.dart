@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lokus/domains/constants/appcolors.dart';
+import 'package:lokus/screens/splash/keywords/keywordscreen.dart';
 import 'package:lokus/screens/splash/login/loginscreen.dart';
 import 'dart:async';
 
@@ -17,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(Duration(seconds: 3), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Loginscreen()));
+          context, MaterialPageRoute(builder: (context) => Keywordscreen()));
     });
   }
 

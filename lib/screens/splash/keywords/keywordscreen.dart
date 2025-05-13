@@ -30,7 +30,7 @@ class _KeywordscreenState extends State<Keywordscreen> {
             ),
             const SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.only(left: 8.0),
+              padding: const EdgeInsets.only(left: 23.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text("What's your \n budget?",

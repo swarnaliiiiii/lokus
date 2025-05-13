@@ -17,7 +17,7 @@ class CustomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 35.0),
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 35.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -30,7 +30,7 @@ class CustomNav extends StatelessWidget {
                 Icon(
                   icon,
                   color: const Color.fromARGB(255, 23, 70, 109),
-                  size: 28,
+                  size: 35,
                 ),
               ],
             ),

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lokus/domains/constants/appcolors.dart';
 
 class CustomNav extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onSkip;
   final IconData icon;
+  final IconData icon1;
   final String label;
 
   const CustomNav({
@@ -11,22 +14,24 @@ class CustomNav extends StatelessWidget {
     this.onTap,
     this.onSkip,
     this.icon = Icons.arrow_back,
+    this.icon1 = Icons.arrow_forward,
     this.label = "Next",
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 35.0),
+      padding: EdgeInsets.symmetric(horizontal: 10.r, vertical: 35.r),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        
         children: [
           // Skip button
           GestureDetector(
             onTap: onTap,
             child: Row(
               children: [
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 Icon(
                   icon,
                   color: const Color.fromARGB(255, 23, 70, 109),

@@ -14,6 +14,12 @@ class Keywordscreen extends StatefulWidget {
 }
 
 class _KeywordscreenState extends State<Keywordscreen> {
+  final List<String> _budgetOptions = [
+    'Budget: \n Under \$499',
+    'Moderate: \n \$500 - \$1499',
+    'Comfortable: \n \$15000 - \$2999',
+    'Premium: Above \$3000',
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,13 +55,13 @@ class _KeywordscreenState extends State<Keywordscreen> {
           SizedBox(height: 10.h),
           Container(
             height: 500.h,
-            child: ListView(
-              children: [
-                Square(),
-                Square(),
-                Square(),
-                Square(),
-              ],
+            child: ListView.builder(
+              itemCount: _budgetOptions.length,
+              itemBuilder: (context, index) {
+                return Square(
+                  child: _budgetOptions[index],
+                );
+              },
             ),
           ),
         ],

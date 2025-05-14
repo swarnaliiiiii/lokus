@@ -42,6 +42,39 @@ class _KeywordscreenState extends State<Keywordscreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 100,
+                width: 300,
+                color: AppColors.page2Color,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 100,
+                width: 300,
+                color: AppColors.page2Color,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 100,
+                width: 300,
+                color: AppColors.page2Color,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 100,
+                width: 300,
+                color: AppColors.page2Color,
+              ),
+            ),
           ],
         ));
   }

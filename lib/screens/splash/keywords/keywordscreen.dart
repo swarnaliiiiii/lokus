@@ -47,9 +47,8 @@ class _KeywordscreenState extends State<Keywordscreen> {
             ),
           ),
           SizedBox(height: 10.h),
-          // Wrap ListView in a Container with height constraint
           Container(
-            height: 500.h, // Fixed height for the ListView section
+            height: 500.h,
             child: ListView(
               children: [
                 Square(),

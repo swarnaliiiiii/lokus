@@ -10,9 +10,11 @@ class Square extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         height: 100.h,
-        width: 300.w,
-        color: AppColors.page2Color,
-        
+        width: 200.w,
+        decoration: BoxDecoration(
+          color: AppColors.page2Color,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
       ),
     );
   }

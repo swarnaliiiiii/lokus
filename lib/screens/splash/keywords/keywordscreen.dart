@@ -37,6 +37,17 @@ class _KeywordscreenState extends State<Keywordscreen> {
               );
             },
           ),
+          CustomNav(
+            icon: Icons.arrow_forward,
+            onNext: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SplashScreen(),
+                ),
+              );
+            },
+          ),
           SizedBox(height: 20.h),
           Padding(
             padding: EdgeInsets.only(left: 20.r),

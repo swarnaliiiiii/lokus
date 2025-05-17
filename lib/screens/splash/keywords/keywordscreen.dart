@@ -5,6 +5,8 @@ import 'package:lokus/screens/splash/splashscreen.dart';
 import 'package:lokus/widgets/nav_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lokus/widgets/square.dart';
+import 'package:lokus/screens/splash/keywords/keywordscreen2.dart';
+import 'dart:async';
 
 class Keywordscreen extends StatefulWidget {
   const Keywordscreen({Key? key}) : super(key: key);
@@ -14,6 +16,15 @@ class Keywordscreen extends StatefulWidget {
 }
 
 class _KeywordscreenState extends State<Keywordscreen> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Keywordscreen2()));
+    });
+  }
+
   final List<String> _budgetOptions = [
     'Budget: \n Under \$499',
     'Moderate: \n \$500 - \$1499',
@@ -29,17 +40,6 @@ class _KeywordscreenState extends State<Keywordscreen> {
           CustomNav(
             icon: Icons.arrow_back,
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SplashScreen(),
-                ),
-              );
-            },
-          ),
-          CustomNav(
-            icon: Icons.arrow_forward,
-            onNext: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(

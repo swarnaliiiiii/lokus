@@ -25,17 +25,6 @@ class _Keywordscreen2State extends State<Keywordscreen2> {
               Navigator.pop(context);
             },
           ),
-          CustomNav(
-            icon: Icons.arrow_forward,
-            onNext: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Keywordscreen(),
-                ),
-              );
-            },
-          ),
           SizedBox(height: 20),
           Padding(
             padding: EdgeInsets.only(left: 20),

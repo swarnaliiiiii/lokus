@@ -5,7 +5,6 @@ import 'package:lokus/domains/constants/appcolors.dart';
 class CustomNav extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onSkip;
-  final VoidCallback? onNext;
   final IconData icon;
   final IconData icon1;
   final String label;
@@ -14,7 +13,6 @@ class CustomNav extends StatelessWidget {
     Key? key,
     this.onTap,
     this.onSkip,
-    this.onNext,
     this.icon = Icons.arrow_back,
     this.icon1 = Icons.arrow_forward,
     this.label = "Next",
@@ -52,23 +50,6 @@ class CustomNav extends StatelessWidget {
               ),
             ),
           ),
-          Column(
-            children: [
-              GestureDetector(
-                onTap: onNext,
-                child: Row(
-                  children: [
-                    SizedBox(width: 8.w),
-                    Icon(
-                      icon1,
-                      color: const Color.fromARGB(255, 23, 70, 109),
-                      size: 35,
-                    ),
-                  ],
-                ),
-              )
-            ],
-          )
         ],
       ),
     );

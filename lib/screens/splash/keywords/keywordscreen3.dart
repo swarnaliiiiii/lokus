@@ -6,19 +6,19 @@ import 'package:lokus/widgets/nav_bar.dart';
 import 'package:lokus/widgets/square.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class Keywordscreen2 extends StatefulWidget {
-  const Keywordscreen2({Key? key}) : super(key: key);
+class Keywordscreen3 extends StatefulWidget {
+  const Keywordscreen3({Key? key}) : super(key: key);
 
   @override
-  State<Keywordscreen2> createState() => _Keywordscreen2State();
+  State<Keywordscreen3> createState() => _Keywordscreen3State();
 }
 
-class _Keywordscreen2State extends State<Keywordscreen2> {
-  final List<String> _durationOptions = [
-    'Weekend Getaway\n (2-3 days)',
-    'Short Trip\n (4-6 days)',
-    'Week-long Trip\n (7-10 days)',
-    'Extended Trip\n (11+ days)',
+class _Keywordscreen3State extends State<Keywordscreen3> {
+  final List<String> _peopleOptions = [
+    'Solo Traveler',
+    'Couple',
+    'Family of 4',
+    'Group',
   ];
 
   @override
@@ -44,7 +44,7 @@ class _Keywordscreen2State extends State<Keywordscreen2> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "What's your\ntravel length?",
+                "What's your\nperson count?",
                 style: GoogleFonts.manrope(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
@@ -61,7 +61,7 @@ class _Keywordscreen2State extends State<Keywordscreen2> {
               itemCount: 4,
               itemBuilder: (context, index) {
                 return Square(
-                    child: _durationOptions[index],
+                    child: _peopleOptions[index],
                 );
               },
             ),

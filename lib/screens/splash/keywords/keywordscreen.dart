@@ -14,7 +14,6 @@ class Keywordscreen extends StatefulWidget {
   @override
   State<Keywordscreen> createState() => _KeywordscreenState();
 }
-
 class _KeywordscreenState extends State<Keywordscreen> {
   @override
   void initState() {
@@ -24,7 +23,6 @@ class _KeywordscreenState extends State<Keywordscreen> {
           context, MaterialPageRoute(builder: (context) => Keywordscreen2()));
     });
   }
-
   final List<String> _budgetOptions = [
     'Budget: \n Under \$499',
     'Moderate: \n \$500 - \$1499',

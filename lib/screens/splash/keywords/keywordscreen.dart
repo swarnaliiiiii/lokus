@@ -24,10 +24,10 @@ class _KeywordscreenState extends State<Keywordscreen> {
     });
   }
   final List<String> _budgetOptions = [
-    'Budget: \n Under \$499',
-    'Moderate: \n \$500 - \$1499',
-    'Comfortable: \n \$15000 - \$2999',
-    'Premium: Above \$3000',
+    'Budget',
+    'Moderate',
+    'Comfortable',
+    'Premium',
   ];
   @override
   Widget build(BuildContext context) {

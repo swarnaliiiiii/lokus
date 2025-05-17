@@ -5,6 +5,8 @@ import 'package:lokus/screens/splash/keywords/keywordscreen.dart';
 import 'package:lokus/widgets/nav_bar.dart';
 import 'package:lokus/widgets/square.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lokus/screens/splash/keywords/keywordscreen3.dart';
+import 'dart:async';
 
 class Keywordscreen2 extends StatefulWidget {
   const Keywordscreen2({Key? key}) : super(key: key);
@@ -14,11 +16,20 @@ class Keywordscreen2 extends StatefulWidget {
 }
 
 class _Keywordscreen2State extends State<Keywordscreen2> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Keywordscreen3()));
+    });
+  }
+
   final List<String> _durationOptions = [
-    'Weekend Getaway\n (2-3 days)',
-    'Short Trip\n (4-6 days)',
-    'Week-long Trip\n (7-10 days)',
-    'Extended Trip\n (11+ days)',
+    'Weekend Getaway',
+    'Short Trip',
+    'Week-long Trip',
+    'Extended Trip',
   ];
 
   @override

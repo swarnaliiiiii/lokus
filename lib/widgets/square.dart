@@ -24,7 +24,7 @@ class Square extends StatelessWidget {
             child,
             style: TextStyle(
               fontSize: 23.sp,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w900,
               color: const Color.fromARGB(255, 23, 70, 109),
             )
           ),

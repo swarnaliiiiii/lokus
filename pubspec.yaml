@@ -38,6 +38,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   flutter_gemini: ^3.0.0
   flutter_dotenv: ^5.2.1
+  http: ^1.4.0
 
 dev_dependencies:
   flutter_test:

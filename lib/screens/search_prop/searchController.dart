@@ -3,6 +3,7 @@ import 'package:lokus/screens/search_prop/placeListController.dart';
 import 'package:lokus/screens/search_prop/place.dart';
 
 class SearchController extends GetxController {
+  
   final PlaceListController placeListController =
       Get.find<PlaceListController>();
   RxList<Place> searchResults = <Place>[].obs;

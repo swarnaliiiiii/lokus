@@ -18,15 +18,6 @@ class Keywordscreen extends StatefulWidget {
 }
 
 class _KeywordscreenState extends State<Keywordscreen> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   Timer(Duration(seconds: 3), () {
-  //     Navigator.pushReplacement(
-  //         context, MaterialPageRoute(builder: (context) => Keywordscreen2()));
-  //   });
-  // }
-
   final List<String> _budgetOptions = [
     'Budget',
     'Moderate',
@@ -35,29 +26,56 @@ class _KeywordscreenState extends State<Keywordscreen> {
   ];
 
   String? _selectedBudget;
+  bool _isLoading = false; // Fixed: Added loading state
 
   Future<void> _selectBudget(String budget) async {
-    final url = Uri.parse('https://api.example.com/select-budget');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'budget': budget}),
-    );
-    print('Response status: ${response.statusCode}');
+    try { // Fixed: Added proper error handling
+      final url = Uri.parse('https://api.example.com/select-budget');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'budget': budget}),
+      );
+      
+      if (response.statusCode == 200) {
+        print('Budget selected successfully: $budget');
+      } else {
+        print('Failed to select budget. Status: ${response.statusCode}');
+        // Handle error appropriately
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to select budget. Please try again.')),
+        );
+      }
+    } catch (e) {
+      print('Error selecting budget: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Network error. Please check your connection.')),
+      );
+    }
   }
 
-  void onOptionTap(String budget) {
+  void onOptionTap(String budget) async { // Fixed: Made async for better handling
+    if (_isLoading) return; // Fixed: Prevent multiple taps
+    
     setState(() {
       _selectedBudget = budget;
+      _isLoading = true;
     });
-    _selectBudget(budget).then((_) {
+
+    await _selectBudget(budget);
+    
+    if (mounted) { // Fixed: Check if widget is still mounted
+      setState(() {
+        _isLoading = false;
+      });
+      
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Keywordscreen2(),
+          builder: (context) => const Keywordscreen2(),
         ),
       );
-    });
+    }
   }
 
   @override
@@ -69,23 +87,18 @@ class _KeywordscreenState extends State<Keywordscreen> {
           CustomNav(
             icon: Icons.arrow_back,
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SplashScreen(),
-                ),
-              );
+              Navigator.pop(context); // Fixed: Use pop instead of push for back navigation
             },
           ),
           SizedBox(height: 20.h),
           Padding(
-            padding: EdgeInsets.only(left: 20.r),
+            padding: EdgeInsets.only(left: 20.w), // Fixed: Use .w for horizontal padding
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "What's your \n budget?",
+                "What's your \nbudget?",
                 style: GoogleFonts.manrope(
-                  fontSize: 30,
+                  fontSize: 30.sp, // Fixed: Added .sp for responsive font size
                   fontWeight: FontWeight.w900,
                   color: const Color.fromARGB(255, 23, 70, 109),
                 ),
@@ -93,18 +106,23 @@ class _KeywordscreenState extends State<Keywordscreen> {
             ),
           ),
           SizedBox(height: 10.h),
-          Container(
-            height: 500.h,
+          Expanded( // Fixed: Use Expanded instead of fixed height Container
             child: ListView.builder(
               itemCount: _budgetOptions.length,
               itemBuilder: (context, index) {
+                final isSelected = _selectedBudget == _budgetOptions[index];
                 return Square(
                   child: _budgetOptions[index],
-                  onTap: () => onOptionTap(_budgetOptions[index]),
+                  onTap: _isLoading ? null : () => onOptionTap(_budgetOptions[index]), // Fixed: Disable tap when loading
                 );
               },
             ),
           ),
+          if (_isLoading) // Fixed: Added loading indicator
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(),
+            ),
         ],
       ),
     );

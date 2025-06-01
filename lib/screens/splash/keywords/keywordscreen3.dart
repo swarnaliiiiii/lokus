@@ -7,6 +7,7 @@ import 'package:lokus/widgets/nav_bar.dart';
 import 'package:lokus/widgets/square.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
+import 'package:get/get.dart';
 
 class Keywordscreen3 extends StatefulWidget {
   const Keywordscreen3({Key? key}) : super(key: key);

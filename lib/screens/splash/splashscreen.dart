@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lokus/domains/constants/appcolors.dart';
 import 'package:lokus/screens/splash/keywords/keywordscreen.dart';
 import 'package:lokus/screens/splash/login/loginscreen.dart';
+import 'package:lokus/screens/splash/dashboard/dashboardscreen.dart';
 import 'dart:async';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(Duration(seconds: 3), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Keywordscreen()));
+          context, MaterialPageRoute(builder: (context) => Dashboardscreen()));
     });
   }
 

@@ -29,7 +29,7 @@ class SearchBar extends StatelessWidget {
           height: 48.h,
           width: 48.w,
           decoration: BoxDecoration(
-           color: Colors.orange, // Match the orange color in your image
+           color: Colors.orange,
            borderRadius: BorderRadius.circular(8.0),
          ),
          child: IconButton(
@@ -37,7 +37,7 @@ class SearchBar extends StatelessWidget {
            onPressed: () async {
              final searchController = Get.find<mysearch.SearchController>();
              final placeListController = Get.find<PlaceListController>();
-             String query = ''; // Replace with actual query input
+             String query = '';
              await searchController.search(query);
              if (searchController.searchResults.isNotEmpty) {
                placeListController.placelist.value = searchController.searchResults;

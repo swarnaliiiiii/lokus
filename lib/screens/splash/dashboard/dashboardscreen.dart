@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lokus/screens/search_prop/searchbox.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 
 class Dashboardscreen extends StatefulWidget {
@@ -17,7 +20,14 @@ class _DashboardscreenState extends State<Dashboardscreen> {
         title: Text('Dashboard'),
       ),
       body: Center(
-        child: Text('Welcome to the Dashboard!'),
+        child: Text('Get Ready for an Amazing Trip!',
+          style: GoogleFonts.manrope(
+            fontSize: 24.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+         ),
+
       ),
     );
   }

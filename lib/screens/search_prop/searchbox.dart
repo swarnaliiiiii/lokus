@@ -15,7 +15,7 @@ class SearchBar extends StatelessWidget {
         Expanded(
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Find your location...',
+                hintText: 'Find your location.....',
                 contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 border: OutlineInputBorder(
                  borderRadius: BorderRadius.circular(8.0),

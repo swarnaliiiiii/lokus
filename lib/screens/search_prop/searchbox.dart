@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:lokus/screens/search_prop/searchController.dart' as my_search;
 import 'package:lokus/screens/search_prop/placeListController.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lokus/screens/map/mapscreen.dart';
 
 class SearchBar extends StatelessWidget {
   final placeListController = Get.put(PlaceListController());
@@ -19,6 +20,10 @@ class SearchBar extends StatelessWidget {
         Expanded(
           child: TextField(
             controller: searchController.searchTextController,
+            readOnly: true,
+            onTap: () {
+              Get.to(() => MapScreen());
+            },
             decoration: InputDecoration(
               hintText: 'Find your location...',
               contentPadding:

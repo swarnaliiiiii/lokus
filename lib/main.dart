@@ -6,10 +6,49 @@ import 'package:lokus/screens/search_prop/placeListController.dart';
 import 'package:lokus/screens/search_prop/searchController.dart' as my_search_controller;
 import 'package:get/get.dart';
 
-void main() {
-  String apiKey = dotenv.env['API_KEY'] ?? '';
-  Gemini.init(apiKey: apiKey);
-  Get.put(PlaceListController());
-  Get.put(my_search_controller.SearchController());
+void main() async {
+  // CRITICAL: Initialize Flutter binding first
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  try {
+    // Load environment variables
+    await dotenv.load(fileName: ".env");
+    
+    // Get API key with better error handling
+    String apiKey = dotenv.env['API_KEY'] ?? '';
+    
+    if (apiKey.isEmpty) {
+      print('Warning: API_KEY not found in .env file');
+      // You might want to handle this case differently
+    }
+    
+    // Initialize Gemini
+    Gemini.init(apiKey: apiKey);
+    
+    // Initialize GetX controllers early (optional - you can also do this in your app)
+    _initializeControllers();
+    
+    print('App initialization completed successfully');
+    
+  } catch (e) {
+    print('Error during app initialization: $e');
+    // You might want to show an error dialog or handle this differently
+  }
+  
   runApp(const MyApp());
+}
+
+void _initializeControllers() {
+  // Initialize controllers that need to be available globally
+  Get.put(PlaceListController(), permanent: true);
+  
+  // Initialize search controller with dependency
+  Get.put(
+    my_search_controller.SearchController(
+      placeListController: Get.find<PlaceListController>(),
+    ),
+    permanent: true,
+  );
+  
+  print('Controllers initialized successfully');
 }

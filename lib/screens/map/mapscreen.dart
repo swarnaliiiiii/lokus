@@ -7,6 +7,7 @@ import 'package:location/location.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -17,7 +18,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController _controller;
-  final searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   Location location = Location();
   var uuid = const Uuid();
   List<dynamic> ListofLocation = [];
@@ -25,22 +26,41 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void initState() {
-    searchController.addListener(() {
-      super.initState();
+    super.initState(); // This should be called first
+    _searchController.addListener(() {
+      onChange(); // Connect the listener to onChange method
     });
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose(); // Don't forget to dispose the controller
+    super.dispose();
+  }
+
   onChange() {
-    placeSuggestion(searchController.text);
+    placeSuggestion(_searchController.text);
   }
 
   void placeSuggestion(String input) {
-    const String apiKey = "";
+    final String apiKey = dotenv.env['API_KEY'] ?? '';
+    if (apiKey.isEmpty) {
+      print('API_KEY is not set in .env file');
+      return;
+    }
+    
+    if (input.isEmpty) {
+      setState(() {
+        ListofLocation = [];
+      });
+      return;
+    }
+    
     try {
       String baseUrl =
           "https://maps.googleapis.com/maps/api/place/autocomplete/json";
       String request =
-          '$baseUrl?inpute=$input&key=$apiKey&sessiontoken=$token';
+          '$baseUrl?input=$input&key=$apiKey&sessiontoken=$token'; // Fixed: 'inpute' -> 'input'
       var url = Uri.parse(request);
       http.get(url).then((response) {
         var data = json.decode(response.body);
@@ -49,7 +69,7 @@ class _MapScreenState extends State<MapScreen> {
         }
         if (response.statusCode == 200) {
           setState(() {
-            ListofLocation = json.decode(response.body)['predictions'];
+            ListofLocation = json.decode(response.body)['predictions'] ?? [];
           });
         }
       }).catchError((e) {
@@ -100,7 +120,7 @@ class _MapScreenState extends State<MapScreen> {
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: TextField(
-                controller: searchController,
+                controller: _searchController,
                 style: TextStyle(fontSize: 14.sp),
                 decoration: InputDecoration(
                   hintText: 'Find your location...',
@@ -108,24 +128,36 @@ class _MapScreenState extends State<MapScreen> {
                   border: InputBorder.none,
                   icon: Icon(Icons.search, size: 20.sp),
                 ),
-                onChanged: (value) {
-                  // Handle search logic here
-                },
+                // Removed onChanged since we're using addListener
               ),
             ),
             Visibility(
-              visible: searchController.text.isEmpty ? false : true,
-              child: SizedBox(
+              visible: ListofLocation.isNotEmpty, // Better condition
+              child: Container(
                 height: 120.h,
+                margin: EdgeInsets.only(top: 8.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
                 child: ListView.builder(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: 5, // Example count
+                  itemCount: ListofLocation.length, // Use actual length
                   itemBuilder: (context, index) {
                     return GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        ListofLocation[index]["description"],
+                      onTap: () {
+                        // Handle place selection
+                        _searchController.text = ListofLocation[index]["description"];
+                        setState(() {
+                          ListofLocation = [];
+                        });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                        child: Text(
+                          ListofLocation[index]["description"] ?? "",
+                          style: TextStyle(fontSize: 14.sp),
+                        ),
                       ),
                     );
                   },

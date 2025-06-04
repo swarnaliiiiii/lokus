@@ -67,6 +67,11 @@ flutter:
   uses-material-design: true
   assets:
      - .env
+     - assets/images/icons8-customer-48.png
+     - assets/images/icons8-explore-48.png
+     - assets/images/icons8-home-48.png
+     - assets/images/icons8-map-48.png
+     - assets/images/icons8-tour-48.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

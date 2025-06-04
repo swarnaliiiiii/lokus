@@ -5,6 +5,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lokus/screens/search_prop/placeListController.dart';
 import 'package:lokus/screens/search_prop/searchController.dart' as my_search_controller;
 import 'package:get/get.dart';
+import 'routes/app_pages.dart';
+import 'routes/app_routes.dart';
+import 'package:lokus/screens/tab_bar/tabcontroller.dart';
 
 void main() async {
   // CRITICAL: Initialize Flutter binding first
@@ -34,7 +37,6 @@ void main() async {
     print('Error during app initialization: $e');
     // You might want to show an error dialog or handle this differently
   }
-  
   runApp(const MyApp());
 }
 

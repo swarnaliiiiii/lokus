@@ -1,7 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:location/location.dart';
+import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -12,6 +17,48 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController _controller;
+  final searchController = TextEditingController();
+  Location location = Location();
+  var uuid = const Uuid();
+  List<dynamic> ListofLocation = [];
+  String token = '1234567890';
+
+  @override
+  void initState() {
+    searchController.addListener(() {
+      super.initState();
+    });
+  }
+
+  onChange() {
+    placeSuggestion(searchController.text);
+  }
+
+  void placeSuggestion(String input) {
+    const String apiKey = "";
+    try {
+      String baseUrl =
+          "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+      String request =
+          '$baseUrl?inpute=$input&key=$apiKey&sessiontoken=$token';
+      var url = Uri.parse(request);
+      http.get(url).then((response) {
+        var data = json.decode(response.body);
+        if (kDebugMode) {
+          print(data);
+        }
+        if (response.statusCode == 200) {
+          setState(() {
+            ListofLocation = json.decode(response.body)['predictions'];
+          });
+        }
+      }).catchError((e) {
+        print(e.toString());
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +100,35 @@ class _MapScreenState extends State<MapScreen> {
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: TextField(
+                controller: searchController,
                 style: TextStyle(fontSize: 14.sp),
                 decoration: InputDecoration(
                   hintText: 'Find your location...',
                   hintStyle: TextStyle(fontSize: 14.sp),
                   border: InputBorder.none,
                   icon: Icon(Icons.search, size: 20.sp),
+                ),
+                onChanged: (value) {
+                  // Handle search logic here
+                },
+              ),
+            ),
+            Visibility(
+              visible: searchController.text.isEmpty ? false : true,
+              child: SizedBox(
+                height: 120.h,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: 5, // Example count
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {},
+                      child: Text(
+                        ListofLocation[index]["description"],
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

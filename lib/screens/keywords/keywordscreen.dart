@@ -9,6 +9,8 @@ import 'package:lokus/screens/keywords/keywordscreen2.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:get/get.dart';
+import 'package:lokus/controllers/inputcontroller.dart';
 
 class Keywordscreen extends StatefulWidget {
   const Keywordscreen({Key? key}) : super(key: key);
@@ -18,6 +20,8 @@ class Keywordscreen extends StatefulWidget {
 }
 
 class _KeywordscreenState extends State<Keywordscreen> {
+
+  
   final List<String> _budgetOptions = [
     'Budget',
     'Moderate',
@@ -29,46 +33,51 @@ class _KeywordscreenState extends State<Keywordscreen> {
   bool _isLoading = false; // Fixed: Added loading state
 
   Future<void> _selectBudget(String budget) async {
-    try { // Fixed: Added proper error handling
+    try {
+      // Fixed: Added proper error handling
       final url = Uri.parse('https://api.example.com/select-budget');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'budget': budget}),
       );
-      
+
       if (response.statusCode == 200) {
         print('Budget selected successfully: $budget');
       } else {
         print('Failed to select budget. Status: ${response.statusCode}');
         // Handle error appropriately
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to select budget. Please try again.')),
+          const SnackBar(
+              content: Text('Failed to select budget. Please try again.')),
         );
       }
     } catch (e) {
       print('Error selecting budget: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Network error. Please check your connection.')),
+        const SnackBar(
+            content: Text('Network error. Please check your connection.')),
       );
     }
   }
 
-  void onOptionTap(String budget) async { // Fixed: Made async for better handling
+  void onOptionTap(String budget) async {
+    // Fixed: Made async for better handling
     if (_isLoading) return; // Fixed: Prevent multiple taps
-    
+
     setState(() {
       _selectedBudget = budget;
       _isLoading = true;
     });
 
     await _selectBudget(budget);
-    
-    if (mounted) { // Fixed: Check if widget is still mounted
+
+    if (mounted) {
+      // Fixed: Check if widget is still mounted
       setState(() {
         _isLoading = false;
       });
-      
+
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -87,12 +96,14 @@ class _KeywordscreenState extends State<Keywordscreen> {
           CustomNav(
             icon: Icons.arrow_back,
             onTap: () {
-              Navigator.pop(context); // Fixed: Use pop instead of push for back navigation
+              Navigator.pop(
+                  context); // Fixed: Use pop instead of push for back navigation
             },
           ),
           SizedBox(height: 20.h),
           Padding(
-            padding: EdgeInsets.only(left: 20.w), // Fixed: Use .w for horizontal padding
+            padding: EdgeInsets.only(
+                left: 20.w), // Fixed: Use .w for horizontal padding
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -106,14 +117,18 @@ class _KeywordscreenState extends State<Keywordscreen> {
             ),
           ),
           SizedBox(height: 10.h),
-          Expanded( // Fixed: Use Expanded instead of fixed height Container
+          Expanded(
+            // Fixed: Use Expanded instead of fixed height Container
             child: ListView.builder(
               itemCount: _budgetOptions.length,
               itemBuilder: (context, index) {
                 final isSelected = _selectedBudget == _budgetOptions[index];
                 return Square(
                   child: _budgetOptions[index],
-                  onTap: _isLoading ? null : () => onOptionTap(_budgetOptions[index]), // Fixed: Disable tap when loading
+                  onTap: _isLoading
+                      ? null
+                      : () => onOptionTap(_budgetOptions[
+                          index]), // Fixed: Disable tap when loading
                 );
               },
             ),

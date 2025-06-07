@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 import 'package:lokus/screens/tab_bar/tabcontroller.dart';
+import 'package:lokus/controllers/inputcontroller.dart';
 
 void main() async {
   // CRITICAL: Initialize Flutter binding first
@@ -19,6 +20,7 @@ void main() async {
     
     // Get API key with better error handling
     String apiKey = dotenv.env['API_KEY'] ?? '';
+
     
     if (apiKey.isEmpty) {
       print('Warning: API_KEY not found in .env file');
@@ -52,5 +54,8 @@ void _initializeControllers() {
     permanent: true,
   );
   
+  Get.put(InputController(), permanent: true);
+  Get.put(NavigationController(), permanent: true);
+
   print('Controllers initialized successfully');
 }

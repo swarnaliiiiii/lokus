@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lokus/screens/splash/splashscreen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
+import 'package:lokus/screens/keywords/keywordscreen2.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          home: const SplashScreen(),
+          home: const Keywordscreen2(),
         );
       },
     );

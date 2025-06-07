@@ -7,6 +7,8 @@ import 'package:lokus/widgets/square.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lokus/screens/keywords/keywordscreen3.dart';
 import 'dart:async';
+import 'package:get/get.dart';
+import 'package:lokus/controllers/inputcontroller.dart';
 
 class Keywordscreen2 extends StatefulWidget {
   const Keywordscreen2({Key? key}) : super(key: key);
@@ -16,21 +18,26 @@ class Keywordscreen2 extends StatefulWidget {
 }
 
 class _Keywordscreen2State extends State<Keywordscreen2> {
+  // Get the controller instance
+  final InputController inputController = Get.find<InputController>();
+  Timer? _navigationTimer;
+
   @override
-  void initState() {
-    super.initState();
-    Timer(Duration(seconds: 3), () {
+  void dispose() {
+    _navigationTimer?.cancel();
+    super.dispose();
+  }
+
+  void _handleDurationSelection(String duration) {
+    // Save duration using controller
+    inputController.setTravelDuration(duration);
+    
+    // Navigate after short delay
+    _navigationTimer = Timer(Duration(seconds: 1), () {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Keywordscreen3()));
     });
   }
-
-  final List<String> _durationOptions = [
-    'Weekend Getaway',
-    'Short Trip',
-    'Week-long Trip',
-    'Extended Trip',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +76,75 @@ class _Keywordscreen2State extends State<Keywordscreen2> {
             height: 500.h,
             width: double.infinity,
             child: ListView.builder(
-              itemCount: 4,
+              itemCount: inputController.durationOptions.length,
               itemBuilder: (context, index) {
-                return Square(
-                    child: _durationOptions[index],
-                );
+                String option = inputController.durationOptions[index];
+                
+                return Obx(() {
+                  bool isSelected = inputController.isDurationSelected(option);
+                  
+                  return GestureDetector(
+                    onTap: () => _handleDurationSelection(option),
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColors.letterColor : Colors.white,
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                          color: isSelected ? AppColors.letterColor ?? Colors.blue : Colors.grey.shade300,
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(16.r),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                option,
+                                style: GoogleFonts.manrope(
+                                  fontSize: 16,
+                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                  color: isSelected ? AppColors.dashColor : Colors.black87,
+                                ),
+                              ),
+                            ),
+                            if (isSelected)
+                              Icon(
+                                Icons.check_circle,
+                                color: AppColors.dashColor,
+                                size: 24.r,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                });
               },
             ),
           ),
+          // Show selected duration
+          Obx(() => inputController.SelectedDuration.value.isNotEmpty
+              ? Padding(
+                  padding: EdgeInsets.all(20.r),
+                  child: Container(
+                    padding: EdgeInsets.all(12.r),
+                    decoration: BoxDecoration(
+                      color: AppColors.letterColor?.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: Text(
+                      'Selected: ${inputController.SelectedDuration.value}',
+                      style: GoogleFonts.manrope(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.letterColor,
+                      ),
+                    ),
+                  ),
+                )
+              : SizedBox.shrink()),
         ],
       ),
     );

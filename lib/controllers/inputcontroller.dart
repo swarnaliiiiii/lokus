@@ -13,17 +13,32 @@ class InputController extends GetxController {
     'Week-long Trip',
     'Extended Trip',
   ];
+  
   final List<String> budgetOptions = [
     'Budget',
     'Moderate',
     'Comfortable',
     'Premium',
   ];
+
   final List<String> peopleOptions = [
     'Solo Traveler',
     'Couple',
     'Family of 4',
     'Group',
+  ];
+
+  final List<String> destinationOptions = [
+    'Beach & Coastal',
+    'Mountain & Hills',
+    'City & Urban',
+    'Desert & Wilderness',
+    'Historical & Cultural',
+    'Adventure & Sports',
+    'Spiritual & Religious',
+    'Wildlife & Nature',
+    'Island Paradise',
+    'Countryside & Rural',
   ];
 
   @override

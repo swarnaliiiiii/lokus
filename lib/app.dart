@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          home: const Keywordscreen2(),
+          home: const SplashScreen(),
         );
       },
     );

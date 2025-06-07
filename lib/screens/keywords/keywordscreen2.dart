@@ -18,7 +18,7 @@ class Keywordscreen2 extends StatefulWidget {
 }
 
 class _Keywordscreen2State extends State<Keywordscreen2> {
-  // Get the controller instance
+
   final InputController inputController = Get.find<InputController>();
   Timer? _navigationTimer;
 

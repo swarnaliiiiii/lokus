@@ -13,13 +13,13 @@ class InputController extends GetxController {
     'Week-long Trip',
     'Extended Trip',
   ];
-  final List<String> _budgetOptions = [
+  final List<String> budgetOptions = [
     'Budget',
     'Moderate',
     'Comfortable',
     'Premium',
   ];
-  final List<String> _peopleOptions = [
+  final List<String> peopleOptions = [
     'Solo Traveler',
     'Couple',
     'Family of 4',

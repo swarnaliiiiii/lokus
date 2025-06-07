@@ -1,39 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:lokus/domains/constants/appcolors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lokus/screens/splash/keywords/keywordscreen.dart';
-import 'package:lokus/screens/splash/keywords/keywordscreen2.dart';
+import 'package:lokus/screens/keywords/keywordscreen.dart';
 import 'package:lokus/widgets/nav_bar.dart';
 import 'package:lokus/widgets/square.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lokus/screens/keywords/keywordscreen3.dart';
 import 'dart:async';
-import 'package:get/get.dart';
 
-class Keywordscreen3 extends StatefulWidget {
-  const Keywordscreen3({Key? key}) : super(key: key);
+class Keywordscreen2 extends StatefulWidget {
+  const Keywordscreen2({Key? key}) : super(key: key);
 
   @override
-  State<Keywordscreen3> createState() => _Keywordscreen3State();
+  State<Keywordscreen2> createState() => _Keywordscreen2State();
 }
 
-class _Keywordscreen3State extends State<Keywordscreen3> {
-final List<String> _peopleOptions = [
-    'Solo Traveler',
-    'Couple',
-    'Family of 4',
-    'Group',
+class _Keywordscreen2State extends State<Keywordscreen2> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Keywordscreen3()));
+    });
+  }
+
+  final List<String> _durationOptions = [
+    'Weekend Getaway',
+    'Short Trip',
+    'Week-long Trip',
+    'Extended Trip',
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.page3Color,
+      backgroundColor: AppColors.dashColor,
       body: Column(
         children: [
           CustomNav(
             icon: Icons.arrow_back,
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Keywordscreen(),
+                ),
+              );
             },
           ),
           SizedBox(height: 10.h),
@@ -42,7 +55,7 @@ final List<String> _peopleOptions = [
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "What's your\npeople count?",
+                "What's your\ntravel length?",
                 style: GoogleFonts.manrope(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
@@ -59,7 +72,7 @@ final List<String> _peopleOptions = [
               itemCount: 4,
               itemBuilder: (context, index) {
                 return Square(
-                  child: _peopleOptions[index],
+                    child: _durationOptions[index],
                 );
               },
             ),

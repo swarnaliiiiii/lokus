@@ -1,52 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:lokus/domains/constants/appcolors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lokus/screens/splash/keywords/keywordscreen.dart';
+import 'package:lokus/screens/keywords/keywordscreen.dart';
+import 'package:lokus/screens/keywords/keywordscreen2.dart';
 import 'package:lokus/widgets/nav_bar.dart';
 import 'package:lokus/widgets/square.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lokus/screens/splash/keywords/keywordscreen3.dart';
 import 'dart:async';
+import 'package:get/get.dart';
 
-class Keywordscreen2 extends StatefulWidget {
-  const Keywordscreen2({Key? key}) : super(key: key);
+class Keywordscreen3 extends StatefulWidget {
+  const Keywordscreen3({Key? key}) : super(key: key);
 
   @override
-  State<Keywordscreen2> createState() => _Keywordscreen2State();
+  State<Keywordscreen3> createState() => _Keywordscreen3State();
 }
 
-class _Keywordscreen2State extends State<Keywordscreen2> {
-  @override
-  void initState() {
-    super.initState();
-    Timer(Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Keywordscreen3()));
-    });
-  }
-
-  final List<String> _durationOptions = [
-    'Weekend Getaway',
-    'Short Trip',
-    'Week-long Trip',
-    'Extended Trip',
+class _Keywordscreen3State extends State<Keywordscreen3> {
+final List<String> _peopleOptions = [
+    'Solo Traveler',
+    'Couple',
+    'Family of 4',
+    'Group',
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.dashColor,
+      backgroundColor: AppColors.page3Color,
       body: Column(
         children: [
           CustomNav(
             icon: Icons.arrow_back,
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Keywordscreen(),
-                ),
-              );
+              Navigator.pop(context);
             },
           ),
           SizedBox(height: 10.h),
@@ -55,7 +42,7 @@ class _Keywordscreen2State extends State<Keywordscreen2> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "What's your\ntravel length?",
+                "What's your\npeople count?",
                 style: GoogleFonts.manrope(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
@@ -72,7 +59,7 @@ class _Keywordscreen2State extends State<Keywordscreen2> {
               itemCount: 4,
               itemBuilder: (context, index) {
                 return Square(
-                    child: _durationOptions[index],
+                  child: _peopleOptions[index],
                 );
               },
             ),

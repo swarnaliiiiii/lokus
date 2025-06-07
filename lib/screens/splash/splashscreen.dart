@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lokus/domains/constants/appcolors.dart';
-import 'package:lokus/screens/splash/keywords/keywordscreen.dart';
-import 'package:lokus/screens/splash/login/loginscreen.dart';
-import 'package:lokus/screens/splash/dashboard/dashboardscreen.dart';
+import 'package:lokus/screens/keywords/keywordscreen.dart';
+import 'package:lokus/screens/login/loginscreen.dart';
+import 'package:lokus/dashboard/dashboardscreen.dart';
 import 'dart:async';
 
 

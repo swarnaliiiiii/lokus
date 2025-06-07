@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:lokus/routes/app_routes.dart';
-import 'package:lokus/screens/splash/dashboard/dashboardscreen.dart';
+import 'package:lokus/dashboard/dashboardscreen.dart';
 import 'package:lokus/screens/map/mapscreen.dart';
 
 class AppPages {

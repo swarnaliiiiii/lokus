@@ -5,7 +5,7 @@ import 'package:lokus/screens/splash/splashscreen.dart';
 import 'package:lokus/widgets/nav_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lokus/widgets/square.dart';
-import 'package:lokus/screens/splash/keywords/keywordscreen2.dart';
+import 'package:lokus/screens/keywords/keywordscreen2.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

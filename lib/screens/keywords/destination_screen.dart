@@ -6,7 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:lokus/controllers/inputcontroller.dart';
+import 'package:lokus/controllers/prompt_controller.dart';
 import 'package:lokus/dashboard/dashboardscreen.dart';
+import 'package:lokus/screens/recommendations/travel_recs.dart';
 
 class DestinationTypeScreen extends StatefulWidget {
   const DestinationTypeScreen({Key? key}) : super(key: key);
@@ -17,6 +19,7 @@ class DestinationTypeScreen extends StatefulWidget {
 
 class _DestinationTypeScreenState extends State<DestinationTypeScreen> {
   final InputController inputController = Get.find<InputController>();
+  final PromptController promptController = Get.find<PromptController>();
   Timer? _navigationTimer;
 
   @override
@@ -28,10 +31,9 @@ class _DestinationTypeScreenState extends State<DestinationTypeScreen> {
   void _handleDestinationSelection(String destination) {
     inputController.setTravelDestination(destination);
     
-    // Navigate after short delay
+    // Generate place recommendations instead of navigating immediately
     _navigationTimer = Timer(Duration(seconds: 1), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Dashboardscreen()));
+      promptController.generatePlacesRecommendations();
     });
   }
 
@@ -91,6 +93,28 @@ class _DestinationTypeScreenState extends State<DestinationTypeScreen> {
             ),
           ),
           SizedBox(height: 20.h),
+          
+          // Add loading indicator when generating recommendations
+          Obx(() => promptController.isGenerating.value
+              ? Container(
+                  padding: EdgeInsets.all(20.r),
+                  child: Column(
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 10.h),
+                      Text(
+                        'Generating recommendations...',
+                        style: GoogleFonts.manrope(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : SizedBox.shrink()),
+          
           Expanded(
             child: Container(
               width: double.infinity,

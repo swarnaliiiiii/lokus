@@ -9,6 +9,7 @@ import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 import 'package:lokus/screens/tab_bar/tabcontroller.dart';
 import 'package:lokus/controllers/inputcontroller.dart';
+import 'package:lokus/controllers/prompt_controller.dart';
 
 void main() async {
   // CRITICAL: Initialize Flutter binding first
@@ -20,6 +21,7 @@ void main() async {
     
     // Get API key with better error handling
     String apiKey = dotenv.env['API_KEY'] ?? '';
+    String GEMINI_API_KEY = dotenv.env['GEMINI_API_KEY'] ?? '';
 
     
     if (apiKey.isEmpty) {
@@ -29,6 +31,13 @@ void main() async {
     
     // Initialize Gemini
     Gemini.init(apiKey: apiKey);
+    
+    if (GEMINI_API_KEY.isEmpty) {
+      print('Warning: GEMINI_API_KEY not found in .env file');
+      // You might want to handle this case differently
+    } else {
+      Gemini.init(apiKey: GEMINI_API_KEY);
+    }
     
     // Initialize GetX controllers early (optional - you can also do this in your app)
     _initializeControllers();
@@ -56,6 +65,7 @@ void _initializeControllers() {
   
   Get.put(InputController(), permanent: true);
   Get.put(NavigationController(), permanent: true);
+  Get.put(PromptController(), permanent: true);
 
   print('Controllers initialized successfully');
 }

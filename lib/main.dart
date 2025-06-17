@@ -19,23 +19,13 @@ void main() async {
     // Load environment variables
     await dotenv.load(fileName: ".env");
     
-    // Get API key with better error handling
-    String apiKey = dotenv.env['API_KEY'] ?? '';
     String GEMINI_API_KEY = dotenv.env['GEMINI_API_KEY'] ?? '';
-
-    
-    if (apiKey.isEmpty) {
-      print('Warning: API_KEY not found in .env file');
-      // You might want to handle this case differently
-    }
-    
-    // Initialize Gemini
-    Gemini.init(apiKey: apiKey);
     
     if (GEMINI_API_KEY.isEmpty) {
       print('Warning: GEMINI_API_KEY not found in .env file');
       // You might want to handle this case differently
-    } else {
+    } 
+    else {
       Gemini.init(apiKey: GEMINI_API_KEY);
     }
     

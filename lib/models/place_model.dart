@@ -1,310 +1,139 @@
 class Place {
   final String name;
   final String location;
+  final String imageUrl;
   final String description;
   final String bestTime;
   final String budgetRange;
   final List<String> topAttractions;
-  final String accommodationType;
+  final String accommodation;
   final String transportation;
-  final String localCuisine;
+  final String cuisine;
   final String culturalTips;
   final String whyPerfect;
-  final String? imageUrl;
-  final double? rating;
-  
+
   Place({
     required this.name,
     required this.location,
+    required this.imageUrl,
     required this.description,
     required this.bestTime,
     required this.budgetRange,
     required this.topAttractions,
-    required this.accommodationType,
+    required this.accommodation,
     required this.transportation,
-    required this.localCuisine,
+    required this.cuisine,
     required this.culturalTips,
     required this.whyPerfect,
-    this.imageUrl,
-    this.rating,
   });
-  
-  factory Place.fromJson(Map<String, dynamic> json) {
-    return Place(
-      name: json['name'] ?? '',
-      location: json['location'] ?? '',
-      description: json['description'] ?? '',
-      bestTime: json['bestTime'] ?? '',
-      budgetRange: json['budgetRange'] ?? '',
-      topAttractions: List<String>.from(json['topAttractions'] ?? []),
-      accommodationType: json['accommodationType'] ?? '',
-      transportation: json['transportation'] ?? '',
-      localCuisine: json['localCuisine'] ?? '',
-      culturalTips: json['culturalTips'] ?? '',
-      whyPerfect: json['whyPerfect'] ?? '',
-      imageUrl: json['imageUrl'],
-      rating: json['rating']?.toDouble(),
-    );
+
+  // Your existing parseFromAIResponse method
+  static List<Place> parseFromAIResponse(String response) {
+    // Your existing parsing logic here
+    // This is for backward compatibility
+    return [];
   }
-  
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'location': location,
-      'description': description,
-      'bestTime': bestTime,
-      'budgetRange': budgetRange,
-      'topAttractions': topAttractions,
-      'accommodationType': accommodationType,
-      'transportation': transportation,
-      'localCuisine': localCuisine,
-      'culturalTips': culturalTips,
-      'whyPerfect': whyPerfect,
-      'imageUrl': imageUrl,
-      'rating': rating,
-    };
-  }
-  
-  // Parse AI response to extract place information
-  static List<Place> parseFromAIResponse(String aiResponse) {
+
+  // New method to parse response with image URLs
+  static List<Place> parseFromAIResponseWithImages(String response) {
     List<Place> places = [];
     
     try {
-      // Split by numbered sections (1., 2., 3., etc.)
-      List<String> sections = aiResponse.split(RegExp(r'\n\s*\d+\.\s*'));
+      // Split the response into individual place sections
+      List<String> placeSections = response.split(RegExp(r'PLACE \d+:'));
       
-      for (int i = 1; i < sections.length && places.length < 10; i++) {
-        String section = sections[i].trim();
-        if (section.isNotEmpty) {
-          Place place = _parseIndividualPlace(section, i);
-          places.add(place);
+      for (String section in placeSections) {
+        if (section.trim().isEmpty) continue;
+        
+        // Extract each field using regex
+        String name = _extractField(section, 'NAME');
+        String location = _extractField(section, 'LOCATION');
+        String imageUrl = _extractField(section, 'IMAGE_URL');
+        String description = _extractField(section, 'DESCRIPTION');
+        String bestTime = _extractField(section, 'BEST_TIME');
+        String budgetRange = _extractField(section, 'BUDGET_RANGE');
+        String attractionsStr = _extractField(section, 'TOP_ATTRACTIONS');
+        String accommodation = _extractField(section, 'ACCOMMODATION');
+        String transportation = _extractField(section, 'TRANSPORTATION');
+        String cuisine = _extractField(section, 'CUISINE');
+        String culturalTips = _extractField(section, 'CULTURAL_TIPS');
+        String whyPerfect = _extractField(section, 'WHY_PERFECT');
+        
+        // Parse attractions list
+        List<String> attractions = attractionsStr.split(';')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList();
+        
+        // Create place object if we have minimum required fields
+        if (name.isNotEmpty && location.isNotEmpty) {
+          places.add(Place(
+            name: name,
+            location: location,
+            imageUrl: imageUrl.isNotEmpty ? imageUrl : _getDefaultImageUrl(name),
+            description: description,
+            bestTime: bestTime,
+            budgetRange: budgetRange,
+            topAttractions: attractions,
+            accommodation: accommodation,
+            transportation: transportation,
+            cuisine: cuisine,
+            culturalTips: culturalTips,
+            whyPerfect: whyPerfect,
+          ));
         }
       }
     } catch (e) {
       print('Error parsing AI response: $e');
-      // Return dummy data if parsing fails
-      return _generateDummyPlaces();
-    }
-    
-    // Ensure we have at least some places
-    if (places.isEmpty) {
-      return _generateDummyPlaces();
     }
     
     return places;
   }
   
-  static Place _parseIndividualPlace(String section, int index) {
-    // Extract place name (usually the first line or after location indicators)
-    String name = _extractPlaceName(section, index);
-    
-    return Place(
-      name: name,
-      location: _extractLocation(section),
-      description: _extractDescription(section),
-      bestTime: _extractBestTime(section),
-      budgetRange: _extractBudgetRange(section),
-      topAttractions: _extractAttractions(section),
-      accommodationType: _extractAccommodation(section),
-      transportation: _extractTransportation(section),
-      localCuisine: _extractCuisine(section),
-      culturalTips: _extractCulturalTips(section),
-      whyPerfect: _extractWhyPerfect(section),
-      rating: 4.0 + (index % 10) * 0.2, // Generate random rating
-    );
-  }
-  
-  static String _extractPlaceName(String section, int index) {
-    // Look for place name patterns
-    List<String> lines = section.split('\n');
-    for (String line in lines) {
-      line = line.trim();
-      if (line.isNotEmpty && !line.startsWith('Duration:') && 
-          !line.startsWith('Budget:') && !line.startsWith('Number:')) {
-        // Remove any numbering or formatting
-        line = line.replaceAll(RegExp(r'^\d+\.\s*'), '');
-        line = line.replaceAll(RegExp(r'^Place name[:\s]*', caseSensitive: false), '');
-        if (line.length > 3 && line.length < 100) {
-          return line.split('\n')[0].trim();
-        }
-      }
+  static String _extractField(String section, String fieldName) {
+    try {
+      RegExp regex = RegExp('$fieldName:\\s*(.+?)(?=\\n[A-Z_]+:|\\n\\n|\$)', 
+          dotAll: true, multiLine: true);
+      RegExpMatch? match = regex.firstMatch(section);
+      return match?.group(1)?.trim() ?? '';
+    } catch (e) {
+      return '';
     }
-    return 'Destination $index';
   }
   
-  static String _extractLocation(String section) {
-    RegExp locationRegex = RegExp(r'location[:\s]*([^\n]+)', caseSensitive: false);
-    Match? match = locationRegex.firstMatch(section);
-    return match?.group(1)?.trim() ?? 'Beautiful Location';
-  }
-  
-  static String _extractDescription(String section) {
-    RegExp descRegex = RegExp(r'description[:\s]*([^\n]+(?:\n[^0-9\n][^\n]*)*)', caseSensitive: false);
-    Match? match = descRegex.firstMatch(section);
-    String description = match?.group(1)?.trim() ?? '';
+  static String _getDefaultImageUrl(String placeName) {
+    // Fallback image URLs from Unsplash for Indian destinations
+    Map<String, String> defaultImages = {
+      'goa': 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=800',
+      'kerala': 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=800',
+      'rajasthan': 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=800',
+      'himachal': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+      'kashmir': 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=800',
+      'delhi': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800',
+      'mumbai': 'https://images.unsplash.com/photo-1595658658481-d53d3f999875?w=800',
+      'bangalore': 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=800',
+      'kolkata': 'https://images.unsplash.com/photo-1558431382-27e303142255?w=800',
+      'chennai': 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=800',
+      'agra': 'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800',
+      'jaipur': 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=800',
+      'udaipur': 'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800',
+      'manali': 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=800',
+      'shimla': 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=800',
+      'rishikesh': 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800',
+      'haridwar': 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=800',
+      'varanasi': 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=800',
+      'pushkar': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800',
+      'hampi': 'https://images.unsplash.com/photo-1582659343788-d0d3d6e56626?w=800',
+    };
     
-    if (description.isEmpty) {
-      // Get first few sentences as description
-      List<String> sentences = section.split(RegExp(r'[.!?]+'));
-      description = sentences.take(2).join('. ').trim();
-      if (description.isNotEmpty && !description.endsWith('.')) {
-        description += '.';
+    String key = placeName.toLowerCase();
+    for (String city in defaultImages.keys) {
+      if (key.contains(city)) {
+        return defaultImages[city]!;
       }
     }
     
-    return description.isNotEmpty ? description : 'A wonderful destination waiting to be explored.';
+    // Generic India travel image if no match found
+    return 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800';
   }
-  
-  static String _extractBestTime(String section) {
-    RegExp timeRegex = RegExp(r'best time[:\s]*([^\n]+)', caseSensitive: false);
-    Match? match = timeRegex.firstMatch(section);
-    return match?.group(1)?.trim() ?? 'Year-round';
-  }
-  
-  static String _extractBudgetRange(String section) {
-    RegExp budgetRegex = RegExp(r'budget[^:]*[:\s]*([^\n]+)', caseSensitive: false);
-    Match? match = budgetRegex.firstMatch(section);
-    return match?.group(1)?.trim() ?? '\$500 - \$1500';
-  }
-  
-  static List<String> _extractAttractions(String section) {
-    List<String> attractions = [];
-    
-    // Look for numbered attractions or bullet points
-    RegExp attractionRegex = RegExp(r'(?:attractions?|activities)[^:]*:([^0-9]+?)(?=\d+\.|$)', caseSensitive: false, dotAll: true);
-    Match? match = attractionRegex.firstMatch(section);
-    
-    if (match != null) {
-      String attractionsText = match.group(1) ?? '';
-      // Split by common delimiters
-      attractions = attractionsText
-          .split(RegExp(r'[•\-\n]'))
-          .map((e) => e.trim())
-          .where((e) => e.isNotEmpty && e.length > 3)
-          .take(3)
-          .toList();
-    }
-    
-    if (attractions.isEmpty) {
-      attractions = ['Historic Sites', 'Natural Beauty', 'Local Culture'];
-    }
-    
-    return attractions;
-  }
-  
-  static String _extractAccommodation(String section) {
-    RegExp accomRegex = RegExp(r'accommodation[^:]*[:\s]*([^\n]+)', caseSensitive: false);
-    Match? match = accomRegex.firstMatch(section);
-    return match?.group(1)?.trim() ?? 'Hotels, Resorts, Guesthouses';
-  }
-  
-  static String _extractTransportation(String section) {
-    RegExp transportRegex = RegExp(r'transportation[^:]*[:\s]*([^\n]+)', caseSensitive: false);
-    Match? match = transportRegex.firstMatch(section);
-    return match?.group(1)?.trim() ?? 'Flights and local transport available';
-  }
-  
-  static String _extractCuisine(String section) {
-    RegExp cuisineRegex = RegExp(r'(?:cuisine|food)[^:]*[:\s]*([^\n]+)', caseSensitive: false);
-    Match? match = cuisineRegex.firstMatch(section);
-    return match?.group(1)?.trim() ?? 'Delicious local and international cuisine';
-  }
-  
-  static String _extractCulturalTips(String section) {
-    RegExp tipsRegex = RegExp(r'(?:cultural|tips|customs)[^:]*[:\s]*([^\n]+)', caseSensitive: false);
-    Match? match = tipsRegex.firstMatch(section);
-    return match?.group(1)?.trim() ?? 'Respect local customs and traditions';
-  }
-  
-  static String _extractWhyPerfect(String section) {
-    RegExp whyRegex = RegExp(r'(?:why|perfect)[^:]*[:\s]*([^\n]+)', caseSensitive: false);
-    Match? match = whyRegex.firstMatch(section);
-    return match?.group(1)?.trim() ?? 'Perfect destination for your travel preferences';
-  }
-  
-  static List<Place> _generateDummyPlaces() {
-    return List.generate(10, (index) {
-      return Place(
-        name: _dummyPlaceNames[index],
-        location: _dummyLocations[index],
-        description: _dummyDescriptions[index],
-        bestTime: _dummyBestTimes[index % _dummyBestTimes.length],
-        budgetRange: '\${500 + (index * 150)} - \${1200 + (index * 200)}',
-        topAttractions: _dummyAttractions[index],
-        accommodationType: 'Hotels, Resorts, Local stays',
-        transportation: 'International flights, Local transport',
-        localCuisine: _dummyCuisines[index],
-        culturalTips: 'Respect local customs and dress modestly at religious sites',
-        whyPerfect: 'Perfect blend of ${_dummyFeatures[index]} that matches your travel style',
-        rating: 4.0 + (index * 0.2),
-      );
-    });
-  }
-  
-  static const List<String> _dummyPlaceNames = [
-    'Santorini', 'Kyoto', 'Machu Picchu', 'Bali', 'Iceland',
-    'Morocco', 'New Zealand', 'Costa Rica', 'Norway', 'Thailand'
-  ];
-  
-  static const List<String> _dummyLocations = [
-    'Greece', 'Japan', 'Peru', 'Indonesia', 'Nordic Region',
-    'North Africa', 'Oceania', 'Central America', 'Scandinavia', 'Southeast Asia'
-  ];
-  
-  static const List<String> _dummyDescriptions = [
-    'Experience stunning sunsets and white-washed buildings overlooking the Aegean Sea.',
-    'Discover ancient temples, traditional gardens, and the perfect blend of old and new.',
-    'Trek through mystical mountains to reach the ancient Incan citadel in the clouds.',
-    'Enjoy tropical paradise with beautiful beaches, lush rice terraces, and rich culture.',
-    'Witness the Northern Lights, geysers, and dramatic volcanic landscapes.',
-    'Explore vibrant markets, desert landscapes, and stunning Islamic architecture.',
-    'Adventure through diverse landscapes from mountains to fjords and pristine beaches.',
-    'Discover incredible biodiversity, zip-line through cloud forests, and relax on pristine beaches.',
-    'Cruise through majestic fjords and experience the land of the midnight sun.',
-    'Experience golden temples, floating markets, and some of the world\'s best street food.'
-  ];
-  
-  static const List<String> _dummyBestTimes = [
-    'April - October', 'March - May & September - November', 'May - September',
-    'April - September', 'June - August', 'October - April'
-  ];
-  
-  static const List<List<String>> _dummyAttractions = [
-    ['Oia Village', 'Red Beach', 'Ancient Akrotiri'],
-    ['Fushimi Inari Shrine', 'Bamboo Grove', 'Kiyomizu Temple'],
-    ['Machu Picchu Citadel', 'Huayna Picchu', 'Sacred Valley'],
-    ['Uluwatu Temple', 'Rice Terraces', 'Mount Batur'],
-    ['Blue Lagoon', 'Northern Lights', 'Golden Circle'],
-    ['Marrakech Medina', 'Sahara Desert', 'Atlas Mountains'],
-    ['Milford Sound', 'Hobbiton', 'Franz Josef Glacier'],
-    ['Manuel Antonio', 'Monteverde', 'Arenal Volcano'],
-    ['Geiranger Fjord', 'Lofoten Islands', 'Northern Lights'],
-    ['Grand Palace', 'Floating Markets', 'Phi Phi Islands']
-  ];
-  
-  static const List<String> _dummyCuisines = [
-    'Fresh seafood, Greek salads, and local wines',
-    'Sushi, ramen, kaiseki, and matcha delicacies',
-    'Quinoa dishes, ceviche, and traditional Andean cuisine',
-    'Nasi goreng, satay, fresh tropical fruits',
-    'Fresh seafood, lamb, and Nordic specialties',
-    'Tagines, couscous, mint tea, and pastries',
-    'Lamb, seafood, Pavlova, and local wines',
-    'Gallo pinto, fresh fruits, and coffee',
-    'Salmon, reindeer, and traditional Nordic fare',
-    'Pad Thai, green curry, mango sticky rice'
-  ];
-  
-  static const List<String> _dummyFeatures = [
-    'romance and stunning views',
-    'culture and tranquility',
-    'adventure and history',
-    'relaxation and spirituality',
-    'nature and adventure',
-    'culture and exotic experiences',
-    'adventure and natural beauty',
-    'eco-tourism and adventure',
-    'natural wonders and serenity',
-    'culture and culinary delights'
-  ];
 }

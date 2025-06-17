@@ -37,23 +37,28 @@ class PromptController extends GetxController {
     if(inputcontroller.SelectedDestination.value.isNotEmpty) {
       basePrompt += "Preferred Region/Country: ${inputcontroller.SelectedDestination.value}\n";
     } else {
-      basePrompt += "Preferred Region/Country: Not specified (suggest worldwide destinations)\n";
+      basePrompt += "Preferred Region/Country: India (suggest destinations within India only)\n";
     }
     
-    basePrompt += "\nFor each of the 10 recommended places, please provide:\n";
-    basePrompt += "1. Place name and location\n";
-    basePrompt += "2. Brief description (2-3 sentences)\n";
-    basePrompt += "3. Best time to visit\n";
-    basePrompt += "4. Estimated budget range for the specified duration\n";
-    basePrompt += "5. Top 3 attractions/activities\n";
-    basePrompt += "6. Accommodation type recommendations\n";
-    basePrompt += "7. Transportation options to reach there\n";
-    basePrompt += "8. Local cuisine highlights\n";
-    basePrompt += "9. Cultural tips or important notes\n";
-    basePrompt += "10. Why it's perfect for the specified group size and budget\n\n";
+    basePrompt += "\nFor each of the 10 recommended places, please provide the information in this EXACT format:\n\n";
+    basePrompt += "PLACE [NUMBER]:\n";
+    basePrompt += "NAME: [Place name]\n";
+    basePrompt += "LOCATION: [City, Country]\n";
+    basePrompt += "IMAGE_URL: [Provide a high-quality landscape/travel image URL for this destination from a reliable source like Unsplash, Pexels, or other free image services]\n";
+    basePrompt += "DESCRIPTION: [Brief description in 2-3 sentences]\n";
+    basePrompt += "BEST_TIME: [Best time to visit]\n";
+    basePrompt += "BUDGET_RANGE: [Estimated budget range for the specified duration]\n";
+    basePrompt += "TOP_ATTRACTIONS: [List 3 main attractions separated by semicolons]\n";
+    basePrompt += "ACCOMMODATION: [Accommodation type recommendations]\n";
+    basePrompt += "TRANSPORTATION: [Transportation options to reach there]\n";
+    basePrompt += "CUISINE: [Local cuisine highlights]\n";
+    basePrompt += "CULTURAL_TIPS: [Cultural tips or important notes]\n";
+    basePrompt += "WHY_PERFECT: [Why it's perfect for the specified group size and budget]\n\n";
     
-    basePrompt += "Please format the response clearly with each place as a separate section, numbered 1-10.\n";
-    basePrompt += "Make sure all recommendations align with the specified budget and duration constraints.";
+    basePrompt += "IMPORTANT: Please ensure you provide valid, accessible image URLs for each destination. Use high-quality landscape photos that showcase the beauty of each place.\n";
+    basePrompt += "Focus on destinations within India only - include popular tourist destinations, hill stations, beaches, historical sites, and cultural destinations across different states of India.\n";
+    basePrompt += "Make sure all recommendations align with the specified budget and duration constraints.\n";
+    basePrompt += "Please follow the exact format above for easy parsing.";
     
     return basePrompt;
   }
@@ -102,8 +107,8 @@ class PromptController extends GetxController {
       final response = await gemini.text(promptText);
       
       if (response?.output != null) {
-        // Parse the response to extract place information
-        List<Place> places = Place.parseFromAIResponse(response!.output!);
+        // Parse the response to extract place information with image URLs
+        List<Place> places = Place.parseFromAIResponseWithImages(response!.output!);
         recommendedPlaces.value = places;
         
         // Navigate to places recommendation screen

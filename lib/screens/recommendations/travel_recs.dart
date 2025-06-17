@@ -13,10 +13,7 @@ class PlacesRecommendationScreen extends StatefulWidget {
 }
 
 class _PlacesRecommendationScreenState extends State<PlacesRecommendationScreen> {
-  final PageController _pageController = PageController();
   final PromptController promptController = Get.find<PromptController>();
-  
-  int currentIndex = 0;
   late List<Place> places;
   
   @override
@@ -28,114 +25,90 @@ class _PlacesRecommendationScreenState extends State<PlacesRecommendationScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Color(0xFFF5F5F0), // Cream background like in design
       appBar: AppBar(
-        title: Text('Recommended Places'),
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFF5F5F0),
         elevation: 0,
-        foregroundColor: Colors.black,
-        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.menu, color: Colors.black),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: Icon(Icons.favorite_border, color: Colors.black),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Progress indicator
-          Container(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${currentIndex + 1} / ${places.length}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                SizedBox(width: 20),
-                Expanded(
-                  child: LinearProgressIndicator(
-                    value: (currentIndex + 1) / places.length,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                  ),
-                ),
-              ],
+          // Title
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: Text(
+              'Select\ndestination',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                height: 1.2,
+              ),
             ),
           ),
           
-          // Swipeable cards
+          // Grid of destinations
           Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  currentIndex = index;
-                });
-              },
-              itemCount: places.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: PlaceCard(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.8,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemCount: places.length,
+                itemBuilder: (context, index) {
+                  return PlaceCard(
                     place: places[index],
-                    onSelectPlace: () => _selectPlace(places[index].name),
-                  ),
-                );
-              },
+                    onSelectPlace: () => _selectPlace(places[index]),
+                  );
+                },
+              ),
             ),
           ),
           
-          // Navigation buttons
-          Container(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Previous button
-                currentIndex > 0
-                    ? ElevatedButton.icon(
-                        onPressed: () {
-                          _pageController.previousPage(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        icon: Icon(Icons.arrow_back),
-                        label: Text('Previous'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[300],
-                          foregroundColor: Colors.black,
-                        ),
-                      )
-                    : SizedBox(width: 100),
-                
-                // Next button
-                currentIndex < places.length - 1
-                    ? ElevatedButton.icon(
-                        onPressed: () {
-                          _pageController.nextPage(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        icon: Icon(Icons.arrow_forward),
-                        label: Text('Next'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                        ),
-                      )
-                    : ElevatedButton.icon(
-                        onPressed: () => _showAllPlacesSummary(),
-                        icon: Icon(Icons.list),
-                        label: Text('View All'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-              ],
+          // Book Now button
+          Padding(
+            padding: EdgeInsets.all(24),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Handle book now action
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF8BC34A), // Green color like in design
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Book Now',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -143,54 +116,191 @@ class _PlacesRecommendationScreenState extends State<PlacesRecommendationScreen>
     );
   }
   
-  void _selectPlace(String placeName) {
-    // Generate detailed itinerary for selected place
-    promptController.generateDetailedItinerary(placeName);
+  void _selectPlace(Place place) {
+    // Show detailed view or navigate to details screen
+    _showPlaceDetails(place);
   }
   
-  void _showAllPlacesSummary() {
+  void _showPlaceDetails(Place place) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'All Recommended Places',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        maxChildSize: 0.95,
+        minChildSize: 0.5,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
             ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: places.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    margin: EdgeInsets.only(bottom: 10),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        child: Text('${index + 1}'),
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                      ),
-                      title: Text(places[index].name),
-                      subtitle: Text(places[index].description),
-                      trailing: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _selectPlace(places[index].name);
-                        },
-                        child: Text('Select'),
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Handle bar
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                  );
-                },
+                  ),
+                  SizedBox(height: 20),
+                  
+                  // Place name and location
+                  Text(
+                    place.name,
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    place.location,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  
+                  // Description
+                  Text(
+                    place.description,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                      height: 1.5,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  
+                  // Info cards
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildInfoCard(
+                          'Best Time',
+                          place.bestTime,
+                          Colors.blue,
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: _buildInfoCard(
+                          'Budget',
+                          place.budgetRange,
+                          Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  
+                  // Attractions
+                  Text(
+                    'Top Attractions',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  ...place.topAttractions.map((attraction) => 
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(Icons.star, color: Colors.amber, size: 20),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              attraction,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ).toList(),
+                  SizedBox(height: 30),
+                  
+                  // Generate itinerary button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        promptController.generateDetailedItinerary(place.name);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      child: Text(
+                        'Generate Detailed Itinerary',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+  
+  Widget _buildInfoCard(String title, String value, Color color) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -204,211 +314,181 @@ class PlaceCard extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return GestureDetector(
+      onTap: onSelectPlace,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.blue.shade50, Colors.white],
-          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with place name and location
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade600,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              // Background image from AI response
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: Image.network(
+                  place.imageUrl,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            _getPlaceColor(place.name),
+                            _getPlaceColor(place.name).withOpacity(0.7),
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            _getPlaceColor(place.name),
+                            _getPlaceColor(place.name).withOpacity(0.7),
+                          ],
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.landscape,
+                        size: 60,
+                        color: Colors.white.withOpacity(0.5),
+                      ),
+                    );
+                  },
                 ),
               ),
-              child: Row(
-                children: [
-                  Icon(Icons.location_on, color: Colors.white, size: 28),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          place.name,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          place.location,
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
-                        ),
+              
+              // Favorite button
+              Positioned(
+                top: 12,
+                right: 12,
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.favorite_border,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+              
+              // Place info at bottom
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.8),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            
-            // Content area
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(20),
-                child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Description
+                      // Country/Region tag
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          _getCountryCode(place.location),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      
+                      // Place name
                       Text(
-                        place.description,
+                        place.name,
                         style: TextStyle(
+                          color: Colors.white,
                           fontSize: 16,
-                          color: Colors.grey[700],
-                          height: 1.4,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      
-                      // Key info cards
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildInfoCard(
-                              Icons.access_time,
-                              'Best Time',
-                              place.bestTime,
-                              Colors.green,
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: _buildInfoCard(
-                              Icons.account_balance_wallet,
-                              'Budget',
-                              place.budgetRange,
-                              Colors.orange,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 15),
-                      
-                      // Attractions
-                      _buildSectionHeader('Top Attractions'),
-                      ...place.topAttractions.map((attraction) => 
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 5),
-                          child: Row(
-                            children: [
-                              Icon(Icons.star, color: Colors.amber, size: 16),
-                              SizedBox(width: 8),
-                              Expanded(child: Text(attraction)),
-                            ],
-                          ),
-                        )
-                      ).toList(),
-                      SizedBox(height: 15),
-                      
-                      // Why perfect section
-                      _buildSectionHeader('Why Perfect for You'),
-                      Text(
-                        place.whyPerfect,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                          fontStyle: FontStyle.italic,
-                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
-            
-            // Select button
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: onSelectPlace,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade600,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: Text(
-                    'Select This Place',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
   
-  Widget _buildInfoCard(IconData icon, String title, String value, Color color) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 20),
-          SizedBox(height: 5),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 11,
-              color: Colors.grey[600],
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
+  Color _getPlaceColor(String placeName) {
+    // Simple color assignment based on place name hash
+    final colors = [
+      Color(0xFF6B73FF),
+      Color(0xFF9C27B0),
+      Color(0xFF2196F3),
+      Color(0xFF009688),
+      Color(0xFF4CAF50),
+      Color(0xFFFF9800),
+      Color(0xFFF44336),
+    ];
+    return colors[placeName.hashCode % colors.length];
   }
   
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 10),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.grey[800],
-        ),
-      ),
-    );
+  String _getCountryCode(String location) {
+    // Extract country code or abbreviation from location
+    if (location.toLowerCase().contains('switzerland')) return 'CH';
+    if (location.toLowerCase().contains('canada')) return 'CA';
+    if (location.toLowerCase().contains('new zealand')) return 'NZ';
+    if (location.toLowerCase().contains('austria')) return 'AT';
+    if (location.toLowerCase().contains('japan')) return 'JP';
+    if (location.toLowerCase().contains('italy')) return 'IT';
+    if (location.toLowerCase().contains('france')) return 'FR';
+    if (location.toLowerCase().contains('usa') || location.toLowerCase().contains('united states')) return 'US';
+    
+    // Default to first two letters of location
+    return location.substring(0, 2).toUpperCase();
   }
 }

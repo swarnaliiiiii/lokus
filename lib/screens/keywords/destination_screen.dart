@@ -9,6 +9,7 @@ import 'package:lokus/controllers/inputcontroller.dart';
 import 'package:lokus/controllers/prompt_controller.dart';
 import 'package:lokus/dashboard/dashboardscreen.dart';
 import 'package:lokus/screens/recommendations/travel_recs.dart';
+import 'package:lokus/screens/recommendations/generate_travel.dart';
 
 class DestinationTypeScreen extends StatefulWidget {
   const DestinationTypeScreen({Key? key}) : super(key: key);
@@ -31,9 +32,9 @@ class _DestinationTypeScreenState extends State<DestinationTypeScreen> {
   void _handleDestinationSelection(String destination) {
     inputController.setTravelDestination(destination);
     
-    // Generate place recommendations instead of navigating immediately
+    // Navigate to TravelRecommendationsScreen instead of generating recommendations directly
     _navigationTimer = Timer(Duration(seconds: 1), () {
-      promptController.generatePlacesRecommendations();
+      Get.to(() => TravelRecommendationsScreen(destinationType: destination));
     });
   }
 
@@ -93,27 +94,6 @@ class _DestinationTypeScreenState extends State<DestinationTypeScreen> {
             ),
           ),
           SizedBox(height: 20.h),
-          
-          // Add loading indicator when generating recommendations
-          Obx(() => promptController.isGenerating.value
-              ? Container(
-                  padding: EdgeInsets.all(20.r),
-                  child: Column(
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 10.h),
-                      Text(
-                        'Generating recommendations...',
-                        style: GoogleFonts.manrope(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : SizedBox.shrink()),
           
           Expanded(
             child: Container(

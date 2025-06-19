@@ -25,7 +25,7 @@ class _PlacesRecommendationScreenState extends State<PlacesRecommendationScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF5F5F0), // Cream background like in design
+      backgroundColor: Color(0xFFF5F5F0),
       appBar: AppBar(
         backgroundColor: Color(0xFFF5F5F0),
         elevation: 0,
@@ -478,17 +478,17 @@ class PlaceCard extends StatelessWidget {
   }
   
   String _getCountryCode(String location) {
-    // Extract country code or abbreviation from location
-    if (location.toLowerCase().contains('switzerland')) return 'CH';
-    if (location.toLowerCase().contains('canada')) return 'CA';
-    if (location.toLowerCase().contains('new zealand')) return 'NZ';
-    if (location.toLowerCase().contains('austria')) return 'AT';
-    if (location.toLowerCase().contains('japan')) return 'JP';
-    if (location.toLowerCase().contains('italy')) return 'IT';
-    if (location.toLowerCase().contains('france')) return 'FR';
-    if (location.toLowerCase().contains('usa') || location.toLowerCase().contains('united states')) return 'US';
-    
-    // Default to first two letters of location
+  List<String> parts = location.split(',');
+  if (parts.length > 1) {
+    String lastPart = parts.last.trim();
+    if (lastPart.length >= 2) {
+      return lastPart.substring(0, 2).toUpperCase();
+    }
+  }
+  
+  if (location.length >= 2) {
     return location.substring(0, 2).toUpperCase();
+  }
+  return 'XX';
   }
 }

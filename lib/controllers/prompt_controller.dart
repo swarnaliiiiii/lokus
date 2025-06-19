@@ -95,6 +95,7 @@ class PromptController extends GetxController {
     return basePrompt;
   }
   
+  // Method with navigation (for backward compatibility)
   Future<void> generatePlacesRecommendations() async {
     try {
       isGenerating.value = true;
@@ -117,6 +118,34 @@ class PromptController extends GetxController {
       
     } catch (e) {
       errorMessage.value = 'Error generating place recommendations: $e';
+    } finally {
+      isGenerating.value = false;
+    }
+  }
+  
+  // Method without navigation (for use in TravelRecommendationsScreen)
+  Future<void> generatePlacesRecommendationsWithoutNavigation() async {
+    try {
+      isGenerating.value = true;
+      errorMessage.value = '';
+      recommendedPlaces.clear();
+      
+      String promptText = generatePlacesRecommendationPrompt();
+      
+      final gemini = Gemini.instance;
+      final response = await gemini.text(promptText);
+      
+      if (response?.output != null) {
+        // Parse the response to extract place information with image URLs
+        List<Place> places = Place.parseFromAIResponseWithImages(response!.output!);
+        recommendedPlaces.value = places;
+      } else {
+        errorMessage.value = 'No response received from AI service';
+      }
+      
+    } catch (e) {
+      errorMessage.value = 'Error generating place recommendations: $e';
+      print('Error in generatePlacesRecommendationsWithoutNavigation: $e');
     } finally {
       isGenerating.value = false;
     }

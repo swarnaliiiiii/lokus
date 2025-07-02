@@ -22,7 +22,7 @@ class TravelDetailsScreen extends StatefulWidget {
 class _TravelDetailsScreenState extends State<TravelDetailsScreen> {
   final InputController inputController = Get.find<InputController>();
   final PromptController promptController = Get.find<PromptController>();
-  final LocationController locationController = Get.put(LocationController());
+  final LocationController locationController = Get.find<LocationController>();
   Timer? _navigationTimer;
   Timer? _searchTimer;
 
@@ -54,6 +54,8 @@ class _TravelDetailsScreenState extends State<TravelDetailsScreen> {
         });
         if (_fromLocationController.text.isEmpty) {
           locationController.showPopularDestinations();
+        } else {
+          locationController.searchLocations(_fromLocationController.text);
         }
       }
     });
@@ -67,6 +69,8 @@ class _TravelDetailsScreenState extends State<TravelDetailsScreen> {
         });
         if (_toLocationController.text.isEmpty) {
           locationController.showPopularDestinations();
+        } else {
+          locationController.searchLocations(_toLocationController.text);
         }
       }
     });
@@ -87,7 +91,11 @@ class _TravelDetailsScreenState extends State<TravelDetailsScreen> {
   void _onLocationSearch(String query, String field) {
     _searchTimer?.cancel();
     _searchTimer = Timer(Duration(milliseconds: 300), () {
-      locationController.searchLocations(query);
+      if (query.isEmpty) {
+        locationController.showPopularDestinations();
+      } else {
+        locationController.searchLocations(query);
+      }
     });
   }
 
@@ -98,12 +106,14 @@ class _TravelDetailsScreenState extends State<TravelDetailsScreen> {
         _showFromSuggestions = false;
       });
       _fromFocusNode.unfocus();
+      inputController.setFromLocation(location.fullName);
     } else {
       _toLocationController.text = location.fullName;
       setState(() {
         _showToSuggestions = false;
       });
       _toFocusNode.unfocus();
+      inputController.setToLocation(location.fullName);
     }
     locationController.clearResults();
   }
@@ -266,11 +276,7 @@ class _TravelDetailsScreenState extends State<TravelDetailsScreen> {
                       onPressed: () {
                         controller.clear();
                         setState(() {});
-                        if (field == 'from') {
-                          locationController.showPopularDestinations();
-                        } else {
-                          locationController.showPopularDestinations();
-                        }
+                        locationController.showPopularDestinations();
                       },
                     )
                   : null,
@@ -295,6 +301,7 @@ class _TravelDetailsScreenState extends State<TravelDetailsScreen> {
 
       return Container(
         margin: EdgeInsets.only(top: 8.h),
+        constraints: BoxConstraints(maxHeight: 300.h),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12.r),
@@ -307,6 +314,7 @@ class _TravelDetailsScreenState extends State<TravelDetailsScreen> {
           ],
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             if (locationController.isLoading.value)
               Container(
@@ -334,55 +342,64 @@ class _TravelDetailsScreenState extends State<TravelDetailsScreen> {
                   ],
                 ),
               ),
-            ...locationController.searchResults.take(6).map((location) {
-              return InkWell(
-                onTap: () => _selectLocation(location, _activeField),
-                child: Container(
-                  padding: EdgeInsets.all(16.r),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.grey.shade200,
-                        width: 0.5,
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        color: AppColors.letterColor ?? Colors.blue,
-                        size: 20.r,
-                      ),
-                      SizedBox(width: 12.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              location.name,
-                              style: GoogleFonts.manrope(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            if (location.country.isNotEmpty)
-                              Text(
-                                location.country,
-                                style: GoogleFonts.manrope(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                          ],
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: locationController.searchResults.length > 8 
+                    ? 8 
+                    : locationController.searchResults.length,
+                itemBuilder: (context, index) {
+                  final location = locationController.searchResults[index];
+                  return InkWell(
+                    onTap: () => _selectLocation(location, _activeField),
+                    child: Container(
+                      padding: EdgeInsets.all(16.r),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.grey.shade200,
+                            width: 0.5,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            color: AppColors.letterColor ?? Colors.blue,
+                            size: 20.r,
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  location.name,
+                                  style: GoogleFonts.manrope(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                if (location.country.isNotEmpty)
+                                  Text(
+                                    location.country,
+                                    style: GoogleFonts.manrope(
+                                      fontSize: 14,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       );

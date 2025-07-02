@@ -27,6 +27,27 @@ class LocationController extends GetxController {
     LocationModel(id: '13', name: 'Rome', country: 'Italy', fullName: 'Rome, Italy', latitude: 41.9028, longitude: 12.4964),
     LocationModel(id: '14', name: 'Amsterdam', country: 'Netherlands', fullName: 'Amsterdam, Netherlands', latitude: 52.3676, longitude: 4.9041),
     LocationModel(id: '15', name: 'Los Angeles', country: 'United States', fullName: 'Los Angeles, CA, USA', latitude: 34.0522, longitude: -118.2437),
+    LocationModel(id: '16', name: 'Berlin', country: 'Germany', fullName: 'Berlin, Germany', latitude: 52.5200, longitude: 13.4050),
+    LocationModel(id: '17', name: 'Madrid', country: 'Spain', fullName: 'Madrid, Spain', latitude: 40.4168, longitude: -3.7038),
+    LocationModel(id: '18', name: 'Vienna', country: 'Austria', fullName: 'Vienna, Austria', latitude: 48.2082, longitude: 16.3738),
+    LocationModel(id: '19', name: 'Prague', country: 'Czech Republic', fullName: 'Prague, Czech Republic', latitude: 50.0755, longitude: 14.4378),
+    LocationModel(id: '20', name: 'Zurich', country: 'Switzerland', fullName: 'Zurich, Switzerland', latitude: 47.3769, longitude: 8.5417),
+    LocationModel(id: '21', name: 'Stockholm', country: 'Sweden', fullName: 'Stockholm, Sweden', latitude: 59.3293, longitude: 18.0686),
+    LocationModel(id: '22', name: 'Copenhagen', country: 'Denmark', fullName: 'Copenhagen, Denmark', latitude: 55.6761, longitude: 12.5683),
+    LocationModel(id: '23', name: 'Helsinki', country: 'Finland', fullName: 'Helsinki, Finland', latitude: 60.1699, longitude: 24.9384),
+    LocationModel(id: '24', name: 'Oslo', country: 'Norway', fullName: 'Oslo, Norway', latitude: 59.9139, longitude: 10.7522),
+    LocationModel(id: '25', name: 'Lisbon', country: 'Portugal', fullName: 'Lisbon, Portugal', latitude: 38.7223, longitude: -9.1393),
+    // Indian cities
+    LocationModel(id: '26', name: 'Bangalore', country: 'India', fullName: 'Bangalore, Karnataka, India', latitude: 12.9716, longitude: 77.5946),
+    LocationModel(id: '27', name: 'Chennai', country: 'India', fullName: 'Chennai, Tamil Nadu, India', latitude: 13.0827, longitude: 80.2707),
+    LocationModel(id: '28', name: 'Kolkata', country: 'India', fullName: 'Kolkata, West Bengal, India', latitude: 22.5726, longitude: 88.3639),
+    LocationModel(id: '29', name: 'Hyderabad', country: 'India', fullName: 'Hyderabad, Telangana, India', latitude: 17.3850, longitude: 78.4867),
+    LocationModel(id: '30', name: 'Pune', country: 'India', fullName: 'Pune, Maharashtra, India', latitude: 18.5204, longitude: 73.8567),
+    LocationModel(id: '31', name: 'Ahmedabad', country: 'India', fullName: 'Ahmedabad, Gujarat, India', latitude: 23.0225, longitude: 72.5714),
+    LocationModel(id: '32', name: 'Jaipur', country: 'India', fullName: 'Jaipur, Rajasthan, India', latitude: 26.9124, longitude: 75.7873),
+    LocationModel(id: '33', name: 'Goa', country: 'India', fullName: 'Goa, India', latitude: 15.2993, longitude: 74.1240),
+    LocationModel(id: '34', name: 'Kerala', country: 'India', fullName: 'Kerala, India', latitude: 10.8505, longitude: 76.2711),
+    LocationModel(id: '35', name: 'Agra', country: 'India', fullName: 'Agra, Uttar Pradesh, India', latitude: 27.1767, longitude: 78.0081),
   ];
 
   Future<void> searchLocations(String query) async {
@@ -41,58 +62,94 @@ class LocationController extends GetxController {
           .where((location) => 
               location.name.toLowerCase().contains(query.toLowerCase()) ||
               location.country.toLowerCase().contains(query.toLowerCase()))
-          .take(5)
+          .take(8)
           .toList();
       return;
     }
 
+    // Always search in popular destinations first for immediate results
+    _searchInPopularDestinations(query);
+
+    // Try API search in background (but don't rely on it)
+    _tryApiSearch(query);
+  }
+
+  Future<void> _tryApiSearch(String query) async {
     try {
       isLoading.value = true;
       
       final String apiKey = dotenv.env['API_KEY'] ?? '';
       if (apiKey.isEmpty) {
-        print('API_KEY is not set in .env file');
-        // Fallback to popular destinations
-        _searchInPopularDestinations(query);
+        print('API_KEY is not set in .env file - using popular destinations only');
         return;
       }
 
       final String baseUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
-      final String request = '$baseUrl?input=$query&key=$apiKey&sessiontoken=$sessionToken';
+      final String request = '$baseUrl?input=$query&key=$apiKey&sessiontoken=$sessionToken&types=(cities)';
       
-      final response = await http.get(Uri.parse(request));
+      final response = await http.get(Uri.parse(request)).timeout(
+        Duration(seconds: 5),
+        onTimeout: () {
+          print('API request timed out - using popular destinations');
+          return http.Response('{"status": "REQUEST_DENIED"}', 408);
+        },
+      );
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final predictions = data['predictions'] as List<dynamic>? ?? [];
         
-        searchResults.value = predictions
-            .map((prediction) => LocationModel.fromJson(prediction))
-            .toList();
-            
-        // If no results from API, search in popular destinations
-        if (searchResults.isEmpty) {
-          _searchInPopularDestinations(query);
+        // Check if API response is valid
+        if (data['status'] == 'OK' && data['predictions'] != null) {
+          final predictions = data['predictions'] as List<dynamic>;
+          
+          final apiResults = predictions
+              .map((prediction) => LocationModel.fromJson(prediction))
+              .toList();
+              
+          // Combine API results with popular destinations (remove duplicates)
+          final combinedResults = <LocationModel>[];
+          final addedNames = <String>{};
+          
+          // Add API results first
+          for (final result in apiResults) {
+            if (!addedNames.contains(result.name.toLowerCase())) {
+              combinedResults.add(result);
+              addedNames.add(result.name.toLowerCase());
+            }
+          }
+          
+          // Add popular destinations that aren't already included
+          for (final popular in searchResults) {
+            if (!addedNames.contains(popular.name.toLowerCase()) && combinedResults.length < 10) {
+              combinedResults.add(popular);
+              addedNames.add(popular.name.toLowerCase());
+            }
+          }
+          
+          searchResults.value = combinedResults;
+        } else {
+          print('API returned error status: ${data['status']} - using popular destinations only');
         }
       } else {
-        print('API request failed: ${response.statusCode}');
-        _searchInPopularDestinations(query);
+        print('API request failed with status: ${response.statusCode} - using popular destinations only');
       }
     } catch (e) {
-      print('Error searching locations: $e');
-      _searchInPopularDestinations(query);
+      print('Error with API search (using popular destinations): $e');
     } finally {
       isLoading.value = false;
     }
   }
 
   void _searchInPopularDestinations(String query) {
-    searchResults.value = popularDestinations
+    final results = popularDestinations
         .where((location) => 
             location.name.toLowerCase().contains(query.toLowerCase()) ||
             location.country.toLowerCase().contains(query.toLowerCase()) ||
             location.fullName.toLowerCase().contains(query.toLowerCase()))
+        .take(8)
         .toList();
+    
+    searchResults.value = results;
   }
 
   void clearResults() {

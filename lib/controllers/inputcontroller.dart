@@ -6,6 +6,10 @@ class InputController extends GetxController {
   var SelectedBudget = ''.obs;
   var SelectedPeople = ''.obs;
   var SelectedDestination = ''.obs;
+  var SelectedFromLocation = ''.obs;
+  var SelectedToLocation = ''.obs;
+  var SelectedStartDate = ''.obs;
+  var SelectedEndDate = ''.obs;
 
   final List<String> durationOptions = [
     'Weekend Getaway',
@@ -53,6 +57,10 @@ class InputController extends GetxController {
     SelectedBudget.value = prefs.getString('SelectedBudget') ?? '';
     SelectedPeople.value = prefs.getString('SelectedPeople') ?? '';
     SelectedDestination.value = prefs.getString('SelectedDestination') ?? '';
+    SelectedFromLocation.value = prefs.getString('SelectedFromLocation') ?? '';
+    SelectedToLocation.value = prefs.getString('SelectedToLocation') ?? '';
+    SelectedStartDate.value = prefs.getString('SelectedStartDate') ?? '';
+    SelectedEndDate.value = prefs.getString('SelectedEndDate') ?? '';
   }
 
   Future<void> setTravelDuration(String duration) async {
@@ -79,6 +87,30 @@ class InputController extends GetxController {
     await prefs.setString('SelectedDestination', destination);
   }
 
+  Future<void> setFromLocation(String fromLocation) async {
+    SelectedFromLocation.value = fromLocation;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('SelectedFromLocation', fromLocation);
+  }
+
+  Future<void> setToLocation(String toLocation) async {
+    SelectedToLocation.value = toLocation;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('SelectedToLocation', toLocation);
+  }
+
+  Future<void> setStartDate(String startDate) async {
+    SelectedStartDate.value = startDate;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('SelectedStartDate', startDate);
+  }
+
+  Future<void> setEndDate(String endDate) async {
+    SelectedEndDate.value = endDate;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('SelectedEndDate', endDate);
+  }
+
   bool isDurationSelected(String duration) {
     return SelectedDuration.value == duration;
   }
@@ -98,16 +130,22 @@ class InputController extends GetxController {
     await prefs.remove('SelectedBudget');
     await prefs.remove('SelectedPeople');
     await prefs.remove('SelectedDestination');
+    await prefs.remove('SelectedFromLocation');
+    await prefs.remove('SelectedToLocation');
+    await prefs.remove('SelectedStartDate');
+    await prefs.remove('SelectedEndDate');
     SelectedDuration.value = '';
     SelectedBudget.value = '';
     SelectedPeople.value = '';
     SelectedDestination.value = '';
+    SelectedFromLocation.value = '';
+    SelectedToLocation.value = '';
+    SelectedStartDate.value = '';
+    SelectedEndDate.value = '';
     return;
   }
 
   String getFormatedPreference() {
-    return 'Duration: ${SelectedDuration.value}, Budget: ${SelectedBudget.value}, People: ${SelectedPeople.value}, Destination: ${SelectedDestination.value}';
+    return 'Duration: ${SelectedDuration.value}, Budget: ${SelectedBudget.value}, People: ${SelectedPeople.value}, Destination: ${SelectedDestination.value}, From: ${SelectedFromLocation.value}, To: ${SelectedToLocation.value}, Start Date: ${SelectedStartDate.value}, End Date: ${SelectedEndDate.value}';
   }
-
-
 }

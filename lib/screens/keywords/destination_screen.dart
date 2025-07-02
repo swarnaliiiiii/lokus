@@ -10,6 +10,7 @@ import 'package:lokus/controllers/prompt_controller.dart';
 import 'package:lokus/dashboard/dashboardscreen.dart';
 import 'package:lokus/screens/recommendations/travel_recs.dart';
 import 'package:lokus/screens/recommendations/generate_travel.dart';
+import 'package:lokus/screens/keywords/travel_details_screen.dart';
 
 class DestinationTypeScreen extends StatefulWidget {
   const DestinationTypeScreen({Key? key}) : super(key: key);
@@ -32,9 +33,9 @@ class _DestinationTypeScreenState extends State<DestinationTypeScreen> {
   void _handleDestinationSelection(String destination) {
     inputController.setTravelDestination(destination);
     
-    // Navigate to TravelRecommendationsScreen instead of generating recommendations directly
+    // Navigate to TravelDetailsScreen instead of TravelRecommendationsScreen
     _navigationTimer = Timer(Duration(seconds: 1), () {
-      Get.to(() => TravelRecommendationsScreen(destinationType: destination));
+      Get.to(() => TravelDetailsScreen());
     });
   }
 

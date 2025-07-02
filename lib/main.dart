@@ -10,6 +10,7 @@ import 'routes/app_routes.dart';
 import 'package:lokus/screens/tab_bar/tabcontroller.dart';
 import 'package:lokus/controllers/inputcontroller.dart';
 import 'package:lokus/controllers/prompt_controller.dart';
+import 'package:lokus/controllers/location_controller.dart';
 
 void main() async {
   // CRITICAL: Initialize Flutter binding first
@@ -56,6 +57,7 @@ void _initializeControllers() {
   Get.put(InputController(), permanent: true);
   Get.put(NavigationController(), permanent: true);
   Get.put(PromptController(), permanent: true);
+  Get.put(LocationController(), permanent: true);
 
   print('Controllers initialized successfully');
 }

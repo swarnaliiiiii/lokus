@@ -48,19 +48,18 @@ class _MapScreenState extends State<MapScreen> {
       print('API_KEY is not set in .env file');
       return;
     }
-    
+
     if (input.isEmpty) {
       setState(() {
         ListofLocation = [];
       });
       return;
     }
-    
+
     try {
       String baseUrl =
           "https://maps.googleapis.com/maps/api/place/autocomplete/json";
-      String request =
-          '$baseUrl?input=$input&key=$apiKey&sessiontoken=$token'; // Fixed: 'inpute' -> 'input'
+      String request = '$baseUrl?input=$input&key=$apiKey&sessiontoken=$token';
       var url = Uri.parse(request);
       http.get(url).then((response) {
         var data = json.decode(response.body);
@@ -147,13 +146,15 @@ class _MapScreenState extends State<MapScreen> {
                     return GestureDetector(
                       onTap: () {
                         // Handle place selection
-                        _searchController.text = ListofLocation[index]["description"];
+                        _searchController.text =
+                            ListofLocation[index]["description"];
                         setState(() {
                           ListofLocation = [];
                         });
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 12.h),
                         child: Text(
                           ListofLocation[index]["description"] ?? "",
                           style: TextStyle(fontSize: 14.sp),

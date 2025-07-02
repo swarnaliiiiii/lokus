@@ -58,7 +58,7 @@ class LocationController extends GetxController {
       }
 
       final String baseUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
-      final String request = '$baseUrl?input=$query&key=$apiKey&sessiontoken=$sessionToken&types=(cities)';
+      final String request = '$baseUrl?input=$query&key=$apiKey&sessiontoken=$sessionToken';
       
       final response = await http.get(Uri.parse(request));
       
